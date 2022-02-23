@@ -1,0 +1,6 @@
+https://signal.onepointltd.com/post/102gbbr/training-an-nlp-model-with-hugging-face-transformers
+https://reposhub.com/python/natural-language-processing/bentrevett-pytorch-pos-tagging.html
+https://github.com/huggingface/transformers
+https://colab.research.google.com/drive/1XyLze7lMyDD25MXG9QOIs5W-b548oxFG?usp=sharing#scrollTo=5SOeH4caFi2Q
+https://signal.onepointltd.com/post/102gbbr/training-an-nlp-model-with-hugging-face-transformers
+https://github.com/google-research/bert
