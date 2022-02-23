@@ -1,0 +1,16 @@
+# コンテナ内で bash 開始 (ホストの ~/Documents/sandhi_ngram をコンテナの /sandhi にマウント)
+
+docker run --gpus all -it -v /home/gengo/Documents/sandhi_ngram:/sandhi tensorflow/tensorflow:latest-gpu bash
+
+# 必要なモジュール
+
+matplotlib
+tensorflow_datasets
+tensorflow-text
+
+
+参考
+
+https://www.tensorflow.org/text/tutorials/transformer
+https://www.tensorflow.org/text/guide/subwords_tokenizer
+https://www.tensorflow.org/install/docker?hl=ja
