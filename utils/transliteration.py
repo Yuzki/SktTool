@@ -1,4 +1,4 @@
-import re
+import os
 import csv
 
 def extract_table(csv_file_path, column1_name, column2_name):
@@ -15,13 +15,12 @@ def extract_table(csv_file_path, column1_name, column2_name):
 def transliterate(text:str, input_method:str, output_method:str):
 
     # load table
-    table = extract_table('transliteration.csv', input_method, output_method)
+    table = extract_table(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'transliteration.csv'), input_method, output_method)
 
     # transliterate
     orig_text = text
     for io_list in table:
         text = text.replace(io_list[0], io_list[1])
-        # text = re.sub(io_list[0], io_list[1], text)
     
     return text
 
