@@ -19,7 +19,7 @@ async def on_ready():
 
 
 @bot.command()
-async def sanskrit(ctx, dictionary, word):
+async def dictionary(ctx, dictionary, word):
     dictionaries = {
         "mw": "MWScan",
         "pw": "PWGScan",
@@ -39,16 +39,37 @@ async def sanskrit(ctx, dictionary, word):
     if response.status_code == 200:
         soup = BeautifulSoup(response.text, "html.parser")
 
+        extracted_text = ""
+        for tag in soup.find_all("span"):
+            if tag.has_attr('class'):
+                classes = tag['class']
+                if 'sdata' in classes:
+                    tag.string = f'\033[1m{tag.text}\033[0m'  # 太字
+                if 'sdata_italic_iast' in classes:
+                    tag.string = f'\033[3;32m{tag.text}\033[0m'  # 斜体で緑色
+            if tag.has_attr('style'):
+                style = tag['style']
+                if 'color' in style:
+                    color = style.split('color:', 1)[1].strip(';')
+                    if color == "blue":
+                        tag.string = f'\033[34m{tag.text}\033[0m'  # 指定された色
+                    elif color == "rgb(160,160,160)":
+                        tag.string = f'\033[30m{tag.text}\033[0m'  # 指定された色
+                    else:
+                        tag.string = f'\033[0m{tag.text}\033[0m'  # 指定された色
+            print(tag)
+    
+
         extracted_text = soup.get_text().strip()
         chunks = [
-            extracted_text[i : i + 2000] for i in range(0, len(extracted_text), 2000)
+            extracted_text[i : i + 1990] for i in range(0, len(extracted_text), 1990)
         ]
 
         text = f"{word} in {dictionary}:\n"
         await ctx.send(text)
 
         for chunk in chunks:
-            await ctx.send(chunk)
+            await ctx.send("```ansi\n" + chunk + "\n```")
     else:
         await ctx.send(f"Failed to fetch results for {word} in {dictionary}.")
 
