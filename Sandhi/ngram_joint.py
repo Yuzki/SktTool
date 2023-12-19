@@ -21,6 +21,7 @@ def joint_ngram(ngram_sent):
     return [ngram_list[i] for i in range(len(ngram_list)) if not i in delete_index_list]
 
 import random
+
 with open('./text/samhita_5-gram.txt', mode='r', encoding='utf-8') as f:
     lines = f.readlines()
 
