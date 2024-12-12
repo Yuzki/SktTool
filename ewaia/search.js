@@ -1,4 +1,5 @@
 let jsonData;
+let transliterationData;
 
 // JSON ファイルを読み込む
 fetch('data.json')
@@ -7,6 +8,15 @@ fetch('data.json')
         jsonData = data;
     })
     .catch(error => console.error('JSONの読み込みエラー:', error));
+
+// 翻字ファイルを読み込む
+fetch('https://raw.githubusercontent.com/Yuzki/SktTool/master/utils/transliteration.csv')
+    .then(response => response.text())
+    .then(transliterationCsv => {
+        transliterationData = parseCsv(transliterationCsv);
+        console.log(transliterationData);
+    })
+    .catch(error => console.error('Error loading transliteraion.csv', error));
 
 // 正規表現での検索を実行
 function search() {
@@ -49,8 +59,9 @@ function search() {
 
             // verb 表示
             entry.verb.forEach(verb => {
+                const verbFormString = String(verb.form); // verb.form を文字列に変換
                 const verbDiv = document.createElement('div');
-                verbDiv.innerHTML = `<strong>Verb:</strong> ${verb.form} (${verb.morph}) - Literature: ${verb.literature.join(', ')}`;
+                verbDiv.innerHTML = `<strong>Verb:</strong> ${transliterate(verbFormString)} (${verb.morph}) - Literature: ${verb.literature.join(', ')}`;
                 resultDiv.appendChild(verbDiv);
             });
 
@@ -64,4 +75,43 @@ function search() {
             resultsContainer.appendChild(resultDiv);
         }
     });
+}
+
+function parseCsv(csv) {
+    return csv.split('\n').map(line => line.split(','));
+}
+
+function transliterate(text) {
+    if (!transliterationData) {
+        console.error('Transliteration data is not loaded');
+        return text;
+    }
+    
+    if (typeof text !== 'string') {
+        console.error('Input text is not a string');
+        return text;
+    }
+
+    const transliterationMap = {};
+
+    transliterationData.slice(1).forEach(row => {
+        const iastIndex = transliterationData[0].indexOf('iast');
+        transliterationMap[row[0]] = {
+            ['tf']: row[transliterationData[0].indexOf('tf')],
+            iast: row[iastIndex],
+        };
+    });
+
+    let result = text;
+
+    for (const key in transliterationMap) {
+        const value = transliterationMap[key];
+        const selectedTransliterationValue = value['tf'];
+        const iastValue = value['iast'];
+
+        result = result.replace(selectedTransliterationValue, iastValue)
+        console.log('Input string', result)
+    }
+
+    return result;
 }
