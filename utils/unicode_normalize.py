@@ -2,8 +2,8 @@ import unicodedata
 from argparse import ArgumentParser
 
 parser = ArgumentParser()
-parser.add_argument("input_file", help="path to input CSV file")
-parser.add_argument("output_file", help="path to output CSV file")
+parser.add_argument("input", help="path to input file")
+parser.add_argument("output", help="path to output file")
 args = parser.parse_args()
 
 
@@ -61,13 +61,13 @@ def save_file(file_path: str, lines: list[str]) -> None:
 
 def main():
     # load text
-    lines = load_file(args.input_file)
+    lines = load_file(args.input)
 
     # normalize text
     lines = [normalize(line) for line in lines]
 
     # save text
-    save_file(args.output_file, lines)
+    save_file(args.output, lines)
 
 
 if __name__ == "__main__":
