@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>EWAia Root Search</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <h1>EWAia Root Search Page</h1>
+    <div>
+        <label for="searchField">Field:</label>
+        <select id="searchField">
+            <option value="key">Root</option>
+            <option value="meaningDe">Meaning (original)</option>
+            <option value="meaningJp">Meaning（Japanese）</option>
+            <option value="verbForm">Verbal Form</option>
+            <option value="nounForm">Nominal Form</option>
+        </select>
+        <input type="text" id="searchInput" placeholder="Keyword (regex)">
+        <button onclick="search()">Search</button>
+    </div>
+    <div id="results"></div>
+
+    <script src="search.js">
+    </script>
+</body>
+
+</html>
