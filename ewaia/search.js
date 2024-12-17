@@ -2,7 +2,7 @@ let jsonData;
 let transliterationData;
 
 // JSON ファイルを読み込む
-fetch('data.json')
+fetch('https://raw.githubusercontent.com/Yuzki/SktTool/master/ewaia/data.json')
     .then(response => response.json())
     .then(data => {
         jsonData = data;
