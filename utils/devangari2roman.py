@@ -1,4 +1,5 @@
 from unicodedata import normalize
+from argparse import ArgumentParser
 
 dev_roman_vowel = {
     "अ": "a",
@@ -136,23 +137,27 @@ def test():
 def normalize_dict(dictionary):
     return {k: normalize("NFKC", v) for k, v in dictionary.items()}
 
+def main():
+    parser = ArgumentParser()
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument("-t", "--text", type=str, help="devanagari text")
+    group.add_argument("-f", "--file", type=str, help="path to text file containing devanagari text")
+    parser.add_argument("-o", "--output", type=str, help="output file name", required=False)
+    args = parser.parse_args()
+    
+    if args.text:
+        roman = devanagari_to_iso15919(args.text)
+        print(roman)
+    elif args.file:
+        with open(args.file, "r") as f:
+            text_lines = f.readlines()
+        
+        roman_lines = [devanagari_to_iso15919(line) for line in text_lines]
+        if args.output:
+            with open(args.output, "w") as f:
+                f.writelines(roman_lines)
+            
+
 
 if __name__ == "__main__":
-    test()
-
-    # normalize dict
-    dev_roman_vowel = normalize_dict(dev_roman_vowel)
-    dev_roman_vowel_join = normalize_dict(dev_roman_vowel_join)
-    dev_roman_consotant = normalize_dict(dev_roman_consotant)
-    dev_roman_visarga_anunasika = normalize_dict(dev_roman_visarga_anunasika)
-    dev_roman_sign = normalize_dict(dev_roman_sign)
-    dev_roman_virama = normalize_dict(dev_roman_virama)
-    dev_roman_number = normalize_dict(dev_roman_number)
-
-    print(f"{dev_roman_vowel=}")
-    print(f"{dev_roman_vowel_join=}")
-    print(f"{dev_roman_consotant=}")
-    print(f"{dev_roman_visarga_anunasika=}")
-    print(f"{dev_roman_sign=}")
-    print(f"{dev_roman_virama=}")
-    print(f"{dev_roman_number=}")
+    main()
