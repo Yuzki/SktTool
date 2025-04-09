@@ -1,22 +1,10 @@
 document.addEventListener('DOMContentLoaded', function () {
-    const searchInput = document.getElementById('search-input');
-    searchInput.addEventListener('input', handleSearchInput);
+    document.getElementById('search-button').addEventListener('click', performSearch);
 });
-
-
-function handleSearchInput(event) {
-    const searchInputValue = event.target.value;
-    
-    // 3文字目が入力された時点で検索を実行
-    if (searchInputValue.length >= 2) {
-        performSearch(searchInputValue);
-    }
-}
 
 function performSearch() {
     const searchInput = document.getElementById('search-input').value;
-    const selectedOption = document.getElementById('transliteration-option').value;
-    const selectedTransliteration = selectedOption;
+    const selectedTransliteration = document.getElementById('transliteration-select').value;
 
     // bloomfield-vc.json ファイルのデータを読み込む
     fetch('https://raw.githubusercontent.com/epicfaace/sanskrit/a851ac7bb739d7fc7379315e3d211b9ac3e1b3c5/dcs/data/bloomfield-vedic-concordance/data/bloomfield-vc.json')
@@ -24,7 +12,6 @@ function performSearch() {
         .then(concData => {
             // transliteration.csv ファイルのデータを読み込む
             fetch('https://raw.githubusercontent.com/Yuzki/SktTool/master/utils/transliteration.csv')
-            // fetch('./transliteration.csv')
                 .then(response => response.text())
                 .then(transliterationCsv => {
                     const transliterationData = parseCsv(transliterationCsv);
@@ -33,45 +20,49 @@ function performSearch() {
                     const results = searchInData(searchInput, selectedTransliteration, concData, transliterationData);
 
                     // 結果表示
-                    displayResults(results);
-                })
-                .catch(error => console.error('Error loading transliteration.csv:', error));
-        })
-        .catch(error => console.error('Error loading bloomfield-vc.json:', error));
+                    displayResults(results, transliterationData);
+                });
+        });
 }
 
 function parseCsv(csv) {
-    return csv.split('\n').map(line => line.split(','));
+    return csv.split('\n')
+        .map(line => line.split(','))
+        .filter(row => row.length > 1 && row.every(field => field.trim() !== ''));
 }
 
-function transliterateSearchInput(searchInput, selectedTransliteration, transliterationData) {
+function transliterateSearchInput(searchInput, inputTransliteration, outputTransliteration, transliterationData) {
     const transliterationMap = {};
 
+    const inputIndex = transliterationData[0].indexOf(inputTransliteration);
+    const outputIndex = transliterationData[0].indexOf(outputTransliteration);
+    console.log(`Input index: ${inputIndex}, Output index: ${outputIndex}`);
+
+    if (inputIndex === -1 || outputIndex === -1) {
+        console.error(`Invalid transliteration types: ${inputTransliteration}, ${outputTransliteration}`);
+        return searchInput;
+    }
+
     transliterationData.slice(1).forEach(row => {
-        const iastIndex = transliterationData[0].indexOf('iast');
-        transliterationMap[row[0]] = {
-            [selectedTransliteration]: row[transliterationData[0].indexOf(selectedTransliteration)],
-            iast: row[iastIndex],
-        };
+        // console.log(`Row: ${row}`);
+        // console.log(`Input: ${row[inputIndex]}, Output: ${row[outputIndex]}`);
+        transliterationMap[row[inputIndex]] = row[outputIndex];
     });
+
+    console.log(transliterationMap);
 
     let result = searchInput;
 
-    for (const key in transliterationMap){
+    for (const key in transliterationMap) {
         const value = transliterationMap[key];
-        const selectedTransliterationValue = value[selectedTransliteration];
-        const iastValue = value['iast'];
-
-        result = result.replace(selectedTransliterationValue, iastValue)
-        console.log('Input string', result)
+        result = result.replace(key, value);
     }
-    
+
     return result;
 }
 
 function searchInData(query, selectedTransliteration, concData, transliterationData) {
-
-    const iastSearchInput = transliterateSearchInput(query, selectedTransliteration, transliterationData);
+    const iastSearchInput = transliterateSearchInput(query, selectedTransliteration, "iast", transliterationData);
 
     const concResults = concData
         .flatMap(item => item.cits.map(cit => ({ text: `${item.mantra} (${cit.cit})`, type: 'Conc' })))
@@ -87,7 +78,7 @@ function searchInData(query, selectedTransliteration, concData, transliterationD
     return [iastSearchInput, concResults];
 }
 
-function displayResults(results) {
+function displayResults(results, transliterationData) {
     const resultContainer = document.getElementById('result-container');
     resultContainer.innerHTML = '';
 
@@ -111,11 +102,12 @@ function displayResults(results) {
     body.classList.add('card-body');
 
     searchResults.forEach(result => {
-        // result.textを続けて追加
-        const textItem = document.createElement('div');
-        textItem.classList.add('card-text');
-        textItem.textContent = result.text;
-        body.appendChild(textItem);
+        const iastText = result.text;
+        console.log(iastText);
+        const isoText = transliterateSearchInput(iastText, 'iast', 'iso', transliterationData);
+        const resultText = document.createElement('p');
+        resultText.textContent = isoText;
+        body.appendChild(resultText);
     });
 
     resultItem.appendChild(header);

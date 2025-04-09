@@ -22,12 +22,14 @@
 
                 <div class="form-group">
                     <label for="transliteration-option">Select Transliteration:</label>
-                    <select class="form-control" id="transliteration-option" onchange="updateTransliteration()">
+                    <select class="form-control" id="transliteration-select">
                         <option value="tf">Tokunaga-Fujii</option>
                         <option value="iast">IAST</option>
                         <option value="kh">Kyoto-Harvard</option>
                     </select>
                 </div>
+
+                <button id="search-button" class="btn btn-primary mt-3">Search</button>
             </div>
         </div>
 
@@ -35,8 +37,6 @@
             <div class="card-body"></div>
         </div>
     </div>
-
-    <div id="result-container"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"
         integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p"
