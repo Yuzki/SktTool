@@ -11,7 +11,7 @@ Discord Bot
 Abbreviation list
 
 - ~~JAIBS~~ [new repo](https://github.com/Yuzki/veda-bib)
-- [EWAia](https://yuzki.github.io/SktTool/bib/web/search.html) (page for searching abbreviations)
+- [EWAia](https://yuzki.github.io/ewaia-abbreviations/) (page for searching abbreviations; the former SktTool URL `bib/web/search.html` now forwards there)
 
 ## concordance
 
